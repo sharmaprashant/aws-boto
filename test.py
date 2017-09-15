@@ -11,12 +11,10 @@ response = ec2ServerImage.describe_instances(InstanceIds=[instance_id])
 
 def Create_Image(ami_name):
     AMI_ID = ec2ServerImage.create_image(InstanceId=instance_id, Name=ami_name, Description='Created by Automated Boto Script', NoReboot=True, DryRun=False)
-    print "\n***********************************************************************\n"
     print AMI_ID
-    ec2ServerImage.create_tags(Resources=[AMI_ID['ImageId']], Tags=[{'Key': 'Name', 'Value': ami_name}, {'Key': 'Created By', 'Value': 'Bamboo Server using BotoScript'},])
-
-    print "\n***********************************************************************\n"
-    print ('AMI-ID is %s against InstanceId is: %s' % (AMI_ID['ImageId'], instance_id))
+    ec2.create_tags(Resources=[AMI_ID['ImageId']], Tags=[{'Key': 'Name', 'Value': ami_name}])
+    print "***********************************************************************\n"
+    print ('AMI-ID is %s against InstanceId is: %' % (AMI_ID['ImageId'], instance_id))
 
 
 try:
@@ -24,7 +22,6 @@ try:
         for instance in reservation["Instances"]:
             status = (instance["State"]["Name"])
             if status == 'running':
-                print "\n***********************************************************************\n"
                 print "Machine Is Running and Initating the AMI Now without reboot"
                 Create_Image(*sys.argv[2:])
             else:
